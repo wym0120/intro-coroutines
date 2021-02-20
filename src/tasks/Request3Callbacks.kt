@@ -12,15 +12,24 @@ fun loadContributorsCallbacks(service: GitHubService, req: RequestData, updateRe
         logRepos(req, responseRepos)
         val repos = responseRepos.bodyList()
         val allUsers = mutableListOf<User>()
-        for (repo in repos) {
+        for ((index, repo) in repos.withIndex()) {
             service.getRepoContributorsCall(req.org, repo.name).onResponse { responseUsers ->
                 logUsers(repo, responseUsers)
                 val users = responseUsers.bodyList()
                 allUsers += users
+                if (index == repos.lastIndex) {
+                    updateResults(allUsers.aggregate())
+                }
             }
         }
-        // TODO: Why this code doesn't work? How to fix that?
-        updateResults(allUsers.aggregate())
+//        for (repo in repos) {
+//            service.getRepoContributorsCall(req.org, repo.name).onResponse { responseUsers ->
+//                logUsers(repo, responseUsers)
+//                val users = responseUsers.bodyList()
+//                allUsers += users
+//            }
+//        }
+//        updateResults(allUsers.aggregate())
     }
 }
 
